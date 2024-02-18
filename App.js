@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
 import Task from './components/task';
 
 export default function App() {
@@ -9,28 +9,27 @@ export default function App() {
 
   const handleAddTask = () => {
     Keyboard.dismiss();
-    setTaskItems([...taskItems, task]);
-    setTask('');
+    if (task.trim() !== '') {
+      if (selectedTaskIndex !== null) {
+        const updatedTasks = [...taskItems];
+        updatedTasks[selectedTaskIndex] = task;
+        setTaskItems(updatedTasks);
+        setSelectedTaskIndex(null);
+      } else {
+        setTaskItems([...taskItems, task]);
+      }
+      setTask('');
+    }
   };
 
-  const completeTask = (index) => {
-    let itemsCopy = [...taskItems];
-    itemsCopy.splice(index, 1);
-    setTaskItems(itemsCopy);
-    setSelectedTaskIndex(null);
+  const handleCompleteTask = (taskText) => {
+    const updatedTasks = taskItems.filter(item => item !== taskText);
+    setTaskItems(updatedTasks);
   };
 
-  const handleEditTask = (index) => {
-    setSelectedTaskIndex(index);
-    setTask(taskItems[index]);
-  };
-
-  const handleFinishEdit = () => {
-    const itemsCopy = [...taskItems];
-    itemsCopy[selectedTaskIndex] = task;
-    setTaskItems(itemsCopy);
-    setSelectedTaskIndex(null);
-    setTask('');
+  const handleEditTask = (oldTask, newTask) => {
+    const updatedTasks = taskItems.map(item => (item === oldTask ? newTask : item));
+    setTaskItems(updatedTasks);
   };
 
   return (
@@ -38,40 +37,22 @@ export default function App() {
       <View style={styles.tasksWrapper}>
         <Text style={styles.sectionTitle}>Today's Task</Text>
         <View style={styles.items}>
-          {taskItems.map((item, index) => {
-            return (
-              <View key={index} style={styles.taskContainer}>
-                <TouchableOpacity
-                  onPress={() => setSelectedTaskIndex(selectedTaskIndex === index ? null : index)}
-                  style={[styles.task, selectedTaskIndex === index && styles.selectedTask]}
-                >
-                  <Task text={item} />
-                </TouchableOpacity>
-                {selectedTaskIndex === index && (
-                  <View style={styles.buttonsContainer}>
-                    <TouchableOpacity onPress={() => handleEditTask(index)}>
-                      <Text>Edit</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-                {selectedTaskIndex === index && (
-                  <TouchableOpacity style={styles.completeButton} onPress={() => completeTask(index)}>
-                    <Text>Complete</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            );
-          })}
+          {taskItems.map((item, index) => (
+            <Task key={index} text={item} onEdit={handleEditTask} onComplete={handleCompleteTask} />
+          ))}
         </View>
       </View>
 
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.writeTaskWrapper}>
-        <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={(text) => setTask(text)} />
-        <TouchableOpacity onPress={selectedTaskIndex !== null ? handleFinishEdit : handleAddTask}>
-          <View style={styles.addWrapper}>
-            <Text style={styles.addText}>{selectedTaskIndex !== null ? 'Save' : 'Add'}</Text>
-          </View>
-        </TouchableOpacity>
+        <TextInput
+          style={styles.input}
+          placeholder={'Write a task'}
+          value={task}
+          onChangeText={(text) => setTask(text)}
+        />
+        <View style={styles.addWrapper}>
+          <Text style={styles.addText} onPress={handleAddTask}>{selectedTaskIndex !== null ? 'Save' : 'Add'}</Text>
+        </View>
       </KeyboardAvoidingView>
     </View>
   );
@@ -92,29 +73,6 @@ const styles = StyleSheet.create({
   },
   items: {
     marginTop: 30,
-  },
-  taskContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  task: {
-    flex: 1,
-  },
-  selectedTask: {
-    backgroundColor: 'lightblue',
-    borderRadius: 10,
-    padding: 10,
-  },
-  buttonsContainer: {
-    flexDirection: 'row',
-    marginRight: 10, // Added margin to separate "Edit" and "Complete" buttons
-  },
-  completeButton: {
-    padding: 10,
-    backgroundColor: 'lightgreen',
-    borderRadius: 10,
   },
   input: {
     flex: 1,

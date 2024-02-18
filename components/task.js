@@ -1,52 +1,99 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 
 const Task = (props) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedText, setEditedText] = useState(props.text);
 
-    return(
+    const handleEdit = () => {
+        setIsEditing(true);
+    };
+
+    const handleSave = () => {
+        setIsEditing(false);
+        props.onEdit(props.text, editedText);
+    };
+
+    const handleComplete = () => {
+        props.onComplete(props.text);
+    };
+
+    return (
         <View style={styles.item}>
-            <View style={styles.itemLeft}>
-                <TouchableOpacity style={styles.square}></TouchableOpacity>
-                <Text style={styles.itemText}>{props.text}</Text>
-            </View>
-            <View style={styles.circular}></View>
+            {isEditing ? (
+                <View style={styles.editContainer}>
+                    <TextInput
+                        style={styles.editInput}
+                        value={editedText}
+                        onChangeText={setEditedText}
+                        autoFocus
+                        onBlur={handleSave}
+                        onSubmitEditing={handleSave}
+                    />
+                </View>
+            ) : (
+                <View style={styles.taskContainer}>
+                    <TouchableOpacity onPress={handleEdit} style={styles.taskTextContainer}>
+                        <Text style={styles.itemText}>{props.text}</Text>
+                    </TouchableOpacity>
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity onPress={handleComplete} style={[styles.button, styles.completeButton]}>
+                            <Text style={styles.buttonText}>Complete</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={handleEdit} style={[styles.button, styles.editButton]}>
+                            <Text style={styles.buttonText}>Edit</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )}
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
-    item:{
+    item: {
         backgroundColor: '#fff',
         padding: 15,
         borderRadius: 10,
+        marginBottom: 20,
+    },
+    taskContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: 20,
     },
-    itemLeft:{
-        flexDirection: 'row',
-        alignItems: 'center',
-        flexWrap: 'wrap',
+    taskTextContainer: {
+        flex: 1,
+        marginRight: 10,
     },
-    square:{
-        width: 24,
-        height: 24,
-        backgroundColor: '#55bcf6',
-        opacity: 0.4,
-        borderRadius: 5,
-        marginRight: 15,
-    },
-    itemText:{
+    itemText: {
         maxWidth: '80%',
     },
-    circular:{
-        width: 12,
-        height: 12,
-        borderColor: '#55bcf6',
-        borderWidth: 2,
+    editContainer: {
+        marginBottom: 10,
+    },
+    editInput: {
+        paddingVertical: 15,
+        paddingHorizontal: 10,
+        backgroundColor: '#f0f0f0',
         borderRadius: 5,
-
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+    },
+    button: {
+        padding: 10,
+        borderRadius: 10,
+        marginLeft: 5,
+    },
+    completeButton: {
+        backgroundColor: 'red',
+    },
+    editButton: {
+        backgroundColor: 'green',
+    },
+    buttonText: {
+        color: 'white',
     },
 });
 
