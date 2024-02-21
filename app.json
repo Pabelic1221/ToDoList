@@ -21,12 +21,18 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.pabelic1221.ToDoList"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "sdkVersion": "49.0.0"
+    "sdkVersion": "49.0.0",
+    "extra": {
+      "eas": {
+        "projectId": "f304b77e-7491-4d1c-ad95-a2529cbe79a6"
+      }
+    }
   },
   "name": "todolist"
 }
