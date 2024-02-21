@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import Task from './components/task';
 
 export default function App() {
@@ -36,11 +36,11 @@ export default function App() {
     <View style={styles.container}>
       <View style={styles.tasksWrapper}>
         <Text style={styles.sectionTitle}>Today's Task</Text>
-        <View style={styles.items}>
+        <ScrollView style={styles.scrollContainer}>
           {taskItems.map((item, index) => (
             <Task key={index} text={item} onEdit={handleEditTask} onComplete={handleCompleteTask} />
           ))}
-        </View>
+        </ScrollView>
       </View>
 
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.writeTaskWrapper}>
@@ -66,13 +66,14 @@ const styles = StyleSheet.create({
   tasksWrapper: {
     paddingTop: 80,
     paddingHorizontal: 20,
+    flex: 1,
   },
   sectionTitle: {
     fontSize: 24,
     fontWeight: 'bold',
   },
-  items: {
-    marginTop: 30,
+  scrollContainer: {
+    flex: 1,
   },
   input: {
     flex: 1,
